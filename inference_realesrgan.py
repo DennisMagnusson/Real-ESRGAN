@@ -7,6 +7,11 @@ from basicsr.archs.rrdbnet_arch import RRDBNet
 from realesrgan import RealESRGANer
 from realesrgan.archs.srvgg_arch import SRVGGNetCompact
 
+import torch
+
+from time import time
+torch.set_num_threads(8)
+
 
 def main():
     """Inference demo for Real-ESRGAN.
@@ -43,7 +48,7 @@ def main():
 
     # determine models according to model names
     args.model_name = args.model_name.split('.')[0]
-    if args.model_name in ['RealESRGAN_x4plus', 'RealESRNet_x4plus']:  # x4 RRDBNet model
+    if args.model_name in ['RealESRGAN_x4plus', 'RealESRNet_x4plus', 'RealESRGAN_x4plus_artwork', 'RealESRGAN_x4plus_artwork_working']:  # x4 RRDBNet model
         model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=4)
         netscale = 4
     elif args.model_name in ['RealESRGAN_x4plus_anime_6B']:  # x4 RRDBNet model with 6 blocks
@@ -98,6 +103,7 @@ def main():
     for idx, path in enumerate(paths):
         imgname, extension = os.path.splitext(os.path.basename(path))
         print('Testing', idx, imgname)
+        t0 = time()
 
         img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
         if len(img.shape) == 3 and img.shape[2] == 4:
@@ -122,6 +128,7 @@ def main():
                 extension = 'png'
             save_path = os.path.join(args.output, f'{imgname}_{args.suffix}.{extension}')
             cv2.imwrite(save_path, output)
+        print('time elapsed: {}'.format(time() - t0))
 
 
 if __name__ == '__main__':

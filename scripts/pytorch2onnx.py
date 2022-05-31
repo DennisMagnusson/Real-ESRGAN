@@ -20,7 +20,7 @@ def main(args):
     x = torch.rand(1, 3, 64, 64)
     # Export the model
     with torch.no_grad():
-        torch_out = torch.onnx._export(model, x, args.output, opset_version=11, export_params=True)
+        torch_out = torch.onnx._export(model, x, args.output, opset_version=11, export_params=True, dynamic_axes={'input': {0: 'batch_size', 2: 'w', 3:'h'}, 'output':  {0: 'batch_size', 2:'ow', 3:'oh'}}, input_names=['input'], output_names=['output'])
     print(torch_out.shape)
 
 
